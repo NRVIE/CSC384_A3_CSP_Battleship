@@ -83,67 +83,29 @@ class State:
                 self.ship_remain != other.ship_remain or \
                 self.ship_seg != other.ship_seg or \
                 self.row_con != other.row_con or \
-                self.col_con != other.row_con:
+                self.col_con != other.col_con:
             return False
+        return True
 
     def place(self, position: tuple, ship: str, ship_ind: int, direction: str = None) -> None:
         """Place a ship (variable 'ship' represents the type of ship) on the position where is the
         left end (direction = 'h') or top end (direction = 'v') of
         a ship placed on (or a certain position for submarine)."""
+        # print(self)
+        # print(position)
+        # print(ship)
+        # print(ship_ind)
+        # print(self.ship_domain)
         assert position in self.ship_domain[ship][ship_ind]
         if ship != 'submarines' and direction is None:
             print('ERROR: argument \'direction\' is missing')
             return
         x = position[0]
         y = position[1]
-        shape = int(math.sqrt(len(self.map)))
-        check_lst = []
-        check_lst2 = []
-        place_lst = []
         if ship == 'submarines':
-            # Check the surrounding of position is empty or not
-            check_lst = [(x - 1, y - 1), (x, y - 1), (x + 1, y - 1),
-                         (x - 1, y), (x + 1, y),
-                         (x - 1, y + 1), (x, y + 1), (x + 1, y + 1)]
-            check_lst = [tup for tup in check_lst if 0 <= tup[0] < shape and 0 <= tup[1] < shape]
-
-            for pos in check_lst:
-                if self.map[pos] != '0' and self.map[pos] != 'W':
-                    return
-
-            # Check whether the spaces of placing a ship is occupied,
-            # and place it if there are all empty
-            if self.map[position] != '0':
-                return
-            else:
-                self.map[position] = 'S'
-                self.ship_remain['submarines'] -= 1
-                return
-
+            check_lst2 = [(x, y)]
+            place_lst = ['S']
         elif ship == 'destroyers':
-            # # Check the surrounding of position is empty or not
-            # if direction == 'v':
-            #     check_lst = [(x - 1, y - 1), (x, y - 1), (x + 1, y - 1),
-            #                  (x - 1, y), (x + 1, y),
-            #                  (x - 1, y + 1), (x + 1, y + 1),
-            #                  (x - 1, y + 2), (x, y + 2), (x + 1, y + 2)]
-            #     check_lst2 = [(x, y), (x, y + 1)]
-            # else:
-            #     check_lst = [(x - 1, y - 1), (x, y - 1), (x + 1, y - 1), (x + 2, y - 1),
-            #                  (x - 1, y), (x + 2, y),
-            #                  (x - 1, y + 1), (x, y + 1), (x + 1, y + 1), (x + 2, y + 1)]
-            #     check_lst2 = [(x, y), (x + 1, y)]
-            # check_lst = [tup for tup in check_lst if 0 <= tup[0] < shape and 0 <= tup[1] < shape]
-            # check_lst2 = [tup for tup in check_lst2 if 0 <= tup[0] < shape and 0 <= tup[1] < shape]
-            #
-            # for pos in check_lst:
-            #     if self.map[pos] != '0' and self.map[pos] != 'W':
-            #         return
-            # # Check whether the spaces of placing a ship is valid or unoccupied,
-            # # and place it if there are all empty
-            # if len(check_lst2) != 2:
-            #     return
-
             # list for placing ship
             if direction == 'h':
                 check_lst2 = [(x, y), (x + 1, y)]
@@ -153,32 +115,6 @@ class State:
                 place_lst = ['T', 'B']
 
         elif ship == 'cruisers':
-            # # Check the surrounding of position is empty or not
-            # if direction == 'h':
-            #     check_lst = [(x - 1, y - 1), (x, y - 1), (x + 1, y - 1), (x + 2, y - 1),
-            #                  (x + 3, y - 1),
-            #                  (x - 1, y), (x + 3, y),
-            #                  (x - 1, y + 1), (x, y + 1), (x + 1, y + 1), (x + 2, y + 1),
-            #                  (x + 3, y + 1)]
-            #     check_lst2 = [(x, y), (x + 1, y), (x + 2, y)]
-            # else:
-            #     check_lst = [(x - 1, y - 1), (x, y - 1), (x + 1, y - 1),
-            #                  (x - 1, y), (x + 1, y),
-            #                  (x - 1, y + 1), (x + 1, y + 1),
-            #                  (x - 1, y + 2), (x + 1, y + 2),
-            #                  (x - 1, y + 3), (x, y + 3), (x + 1, y + 3)]
-            #     check_lst2 = [(x, y), (x, y + 1), (x, y + 2)]
-            # check_lst = [tup for tup in check_lst if 0 <= tup[0] < shape and 0 <= tup[1] < shape]
-            # check_lst2 = [tup for tup in check_lst2 if 0 <= tup[0] < shape and 0 <= tup[1] < shape]
-            #
-            # for pos in check_lst:
-            #     if self.map[pos] != '0' and self.map[pos] != 'W':
-            #         return
-            # # Check whether the spaces of placing a ship is valid or unoccupied,
-            # # and place it if there are all empty
-            # if len(check_lst2) != 3:
-            #     return
-
             # list for placing ship
             if direction == 'h':
                 check_lst2 = [(x, y), (x + 1, y), (x + 2, y)]
@@ -188,33 +124,6 @@ class State:
                 place_lst = ['T', 'M', 'B']
 
         elif ship == 'battleships':
-            # # Check the surrounding of position is empty or not
-            # if direction == 'h':
-            #     check_lst = [(x - 1, y - 1), (x, y - 1), (x + 1, y - 1), (x + 2, y - 1),
-            #                  (x + 3, y - 1), (x + 4, y + 1),
-            #                  (x - 1, y), (x + 4, y),
-            #                  (x - 1, y + 1), (x, y + 1), (x + 1, y + 1), (x + 2, y + 1),
-            #                  (x + 3, y + 1), (x + 4, y + 1)]
-            #     check_lst2 = [(x, y), (x + 1, y), (x + 2, y), (x + 3, y)]
-            # else:
-            #     check_lst = [(x - 1, y - 1), (x, y - 1), (x + 1, y - 1),
-            #                  (x - 1, y), (x + 1, y),
-            #                  (x - 1, y + 1), (x + 1, y + 1),
-            #                  (x - 1, y + 2), (x + 1, y + 2),
-            #                  (x - 1, y + 3), (x + 1, y + 3),
-            #                  (x - 1, y + 4), (x, y + 4), (x + 1, y + 4)]
-            #     check_lst2 = [(x, y), (x, y + 1), (x, y + 2), (x, y + 3)]
-            # check_lst = [tup for tup in check_lst if 0 <= tup[0] < shape and 0 <= tup[1] < shape]
-            # check_lst2 = [tup for tup in check_lst2 if 0 <= tup[0] < shape and 0 <= tup[1] < shape]
-            #
-            # for pos in check_lst:
-            #     if self.map[pos] != '0' and self.map[pos] != 'W':
-            #         return
-            # # Check whether the spaces of placing a ship is valid or unoccupied,
-            # # and place it if there are all empty
-            # if len(check_lst2) != 4:
-            #     return
-
             # list for placing ship
             if direction == 'h':
                 check_lst2 = [(x, y), (x + 1, y), (x + 2, y), (x + 3, y)]
@@ -225,17 +134,9 @@ class State:
         else:
             return
 
-        # Check whether the ship overlap any non-empty space
-        seg_count = 0
-        for i in range(len(check_lst2)):
-            pos = check_lst2[i]
-            if self.map[pos] != '0':
-                if self.map[pos] != place_lst[i]:
-                    return
-                else:
-                    seg_count += 1
-        # Avoid the situation place the same ship at the same position again.
-        if seg_count == len(place_lst):
+        if not self.c_surrounding([ship, position, direction]):
+            return
+        if not self.c_row_col([ship, position, direction]):
             return
 
         # Place ship
@@ -248,6 +149,29 @@ class State:
                 self.ship_seg.pop(pos)
         self.ship_domain[ship].pop(ship_ind)
         self.ship_remain[ship] -= 1
+
+    def check_constraints(self, ship1: list, ship2: list):
+        global ship2_info
+        for pos in self.ship_domain[ship2[0]][ship2[1]]:
+            if ship2[0] == 'submarines':
+                ship2_info = [ship2[0], pos]
+
+                con_result = [self.c_row_col(ship2_info),
+                              self.c_surrounding(ship2_info),
+                              self.c_ships(ship1, ship2_info)]
+                if all(con_result):
+                    return True
+            else:
+                for direct in self.ship_domain[ship2[0]][ship2[1]][pos]:
+                    ship2_info = [ship2[0], pos, direct]
+
+                    con_result = [self.c_row_col(ship2_info),
+                                  self.c_surrounding(ship2_info),
+                                  self.c_ships(ship1, ship2_info)]
+                    if all(con_result):
+                        return True
+
+        return False
 
     def c_row_col(self, ship: list) -> bool:
         """Return True if a given ship not offend the constraint of row and column.
@@ -338,26 +262,35 @@ class State:
         for i in range(len(check_lst)):
             key = check_lst[i]
             # Ship cannot be occupied on the spaces that ensure it is water
-            if self.map[key] == 'W':
-                return False
-            if self.map[key] == 'T' or self.map[key] == 'L':
-                if i != 0:
+            if ship[0] == 'submarines':
+                if self.map[key] != '0':
                     return False
-                else:
-                    seg_count += 1
-                    state_field[key[1]][key[0]] = 0
-            elif self.map[key] == 'B' or self.map[key] == 'R':
-                if i != (len(check_lst) - 1):
+            else:
+                if self.map[key] == '0':
+                    pass
+                elif self.map[key] == 'W':
                     return False
-                else:
-                    seg_count += 1
-                    state_field[key[1]][key[0]] = 0
-            elif self.map[key] == 'M':
-                if not (0 < i < (len(check_lst) - 1)):
-                    return False
-                else:
-                    seg_count += 1
-                    state_field[key[1]][key[0]] = 0
+                elif (self.map[key] == 'T' and ship[2] == 'v') \
+                        or (self.map[key] == 'L' and ship[2] == 'h'):
+                    if i != 0:
+                        return False
+                    else:
+                        seg_count += 1
+                        state_field[key[1]][key[0]] = 0
+                elif (self.map[key] == 'B' and ship[2] == 'v') \
+                        or (self.map[key] == 'R' and ship[2] == 'h'):
+                    if i != (len(check_lst) - 1):
+                        return False
+                    else:
+                        seg_count += 1
+                        state_field[key[1]][key[0]] = 0
+                elif self.map[key] == 'M':
+                    if not (0 < i < (len(check_lst) - 1)):
+                        return False
+                    else:
+                        seg_count += 1
+                        state_field[key[1]][key[0]] = 0
+
         # Avoid the situation that ship occupied on a same pre-existed ship with same position.
         if seg_count == len(check_lst):
             # Eliminate the position in ship_seg, since ship segments already built a ship.
@@ -484,9 +417,15 @@ def s_clone(s: State) -> State:
     # Copy State
     clone.map = s.map.copy()
     clone.ship_remain = s.ship_remain.copy()
+    clone.ship_seg = s.ship_seg.copy()
     clone.ship_domain = s.ship_domain.copy()
     clone.row_con = s.row_con.copy()
     clone.col_con = s.col_con.copy()
+    for key in s.ship_domain:
+        clone.ship_domain[key] = s.ship_domain[key].copy()
+        if key != 'submarines':
+            for i in s.ship_domain[key]:
+                clone.ship_domain[key][i] = s.ship_domain[key][i].copy()
     return clone
 
 
@@ -573,15 +512,17 @@ def txt_to_state(file: str) -> State:
                     s.map[(x_lst, y_lst)] != 'W' and \
                     s.map[(x_lst, y_lst)] != 'S':
                 s.ship_seg[(x_lst, y_lst)] = s.map[(x_lst, y_lst)]
+            elif s.map[(x_lst, y_lst)] == 'S':
+                s.ship_remain['submarines'] -= 1
 
     # Set the col/row to be all 'W' if its row/column constraint is 0.
-    for i in s.row_con:
+    for i in range(len(s.row_con)):
         if s.row_con[i] == 0:
             # Set that row to 'W'
             for x in range(shape):
                 s.map[(x, i)] = 'W'
 
-    for i in s.col_con:
+    for i in range(len(s.col_con)):
         if s.col_con[i] == 0:
             # Set that column to 'W'
             for y in range(shape):
@@ -591,7 +532,7 @@ def txt_to_state(file: str) -> State:
     return s
 
 
-def forward_check(s: State) -> State:
+def forward_check(s: State):
     """Return a solution state by using forward checking algorithm"""
     # Checking if the current state is a goal state
     zero_remain = 0
@@ -599,18 +540,80 @@ def forward_check(s: State) -> State:
         if s.ship_remain[key] == 0:
             zero_remain += 1
     if zero_remain == 4:
-        return s
+        print(s)
+        return
 
     # Pick an unassigned variable and doing recursion
-    ...
+    # print(pick_var(s))
+    ship_var = pick_var(s)
+    if ship_var is None:
+        return
+    else:
+        ship, ship_ind, directions = ship_var
+    domain = []  # list of tuple stores positions
+    if ship == 'submarines':
+        domain = s.ship_domain[ship][ship_ind]
+    else:
+        for direct in directions:
+            for pos in s.ship_domain[ship][ship_ind]:
+                if direct in s.ship_domain[ship][ship_ind][pos]:
+                    domain.append([pos, direct])
+
+    for pos in domain:
+        tmp_s = s_clone(s)
+        if ship == 'submarines':
+            tmp_s.place(pos, ship, ship_ind, directions)
+            ship_info = [ship, pos]
+        else:
+            tmp_s.place(pos[0], ship, ship_ind, pos[1])
+            ship_info = [ship, pos[0], pos[1]]
+        if tmp_s == s:
+            continue
+
+        # Checking if the current state is a goal state
+        zero_remain = 0
+        for key in tmp_s.ship_remain:
+            if tmp_s.ship_remain[key] == 0:
+                zero_remain += 1
+        if zero_remain == 4:
+            for f_pos in tmp_s.map:
+                if tmp_s.map[f_pos] == '0':
+                    tmp_s.map[f_pos] = 'W'
+            print(tmp_s)
+            exit()
+
+        dwo_occurred = False
+
+        # Getting all the constraints with only one unassigned variable.
+        c_queue = []
+        for key in tmp_s.ship_domain:
+            for i in tmp_s.ship_domain[key]:
+                if key != ship or i != ship_ind:
+                    c_queue.append([key, i])
+        for c in c_queue:
+            if not tmp_s.check_constraints(ship_info, c):
+                dwo_occurred = True
+                break
+
+        if not dwo_occurred:
+            forward_check(tmp_s)
+        # Restore state
+        # print(tmp_s)
+        # print(tmp_s.ship_remain)
+        tmp_s = s_clone(s)
+    return
 
 
-def pick_var(s: State):
-    """ Pick an unassigned variable for forward checking or GAC.
+def pick_var(s: State) -> list:
+    """ Return a list contains ship type, ship index, and ship direction for
+    picking an unassigned variable for forward checking or GAC.
      - priority 1: Pick a ship that can complete the ship_segment with
      the lowest constraint mark (the number of row and column constraint at that position).
-     - priority 2: Pick the largest ship with the lowest number of domain
+     - priority 2: Pick the largest ship
     """
+    shape = len(s.row_con)
+    pick_list = []
+    directions = None
     if len(s.ship_seg) > 0:
         # Find the one with lowest constraint mark
         lowest_seg = None
@@ -620,10 +623,80 @@ def pick_var(s: State):
             if lowest_mark is None or lowest_mark > mark:
                 lowest_seg = pos
                 lowest_mark = mark
-        # Find what the biggest possible ship
-        lowest_con = None
-        if s.row_con[lowest_seg[1]] <= s.col_con[lowest_seg[0]]:
-            lowest_con = s.row_con[lowest_seg[1]]
 
-        else:
-            lowest_con = s.col_con[lowest_seg[0]]
+        # Find what the biggest possible ship
+        # Getting a list of ship from largest to smallest
+        if s.ship_seg[lowest_seg] == 'T':
+            directions = ['v', 'h']
+            if s.col_con[lowest_seg[0]] >= 4 and (shape - 1 - lowest_seg[1]) >= 3:
+                pick_list = ['battleships', 'cruisers', 'destroyers']
+            elif s.col_con[lowest_seg[0]] >= 3 and (shape - 1 - lowest_seg[1]) >= 2:
+                pick_list = ['cruisers', 'destroyers']
+            elif s.col_con[lowest_seg[0]] >= 2 and (shape - 1 - lowest_seg[1]) >= 1:
+                pick_list = ['destroyers']
+        elif s.ship_seg[lowest_seg] == 'B':
+            directions = ['v', 'h']
+            if s.col_con[lowest_seg[0]] >= 4 and lowest_seg[1] >= 3:
+                pick_list = ['battleships', 'cruisers', 'destroyers']
+            elif s.col_con[lowest_seg[0]] >= 3 and lowest_seg[1] >= 2:
+                pick_list = ['cruisers', 'destroyers']
+            elif s.col_con[lowest_seg[0]] >= 2 and lowest_seg[1] >= 1:
+                pick_list = ['destroyers']
+        elif s.ship_seg[lowest_seg] == 'L':
+            directions = ['h', 'v']
+            position = (lowest_seg[0], lowest_seg[1])
+            if s.row_con[lowest_seg[1]] >= 4 and (shape - 1 - lowest_seg[0]) >= 3:
+                pick_list = ['battleships', 'cruisers', 'destroyers']
+            elif s.row_con[lowest_seg[1]] >= 3 and (shape - 1 - lowest_seg[0]) >= 2:
+                pick_list = ['cruisers', 'destroyers']
+            elif s.row_con[lowest_seg[1]] >= 2 and (shape - 1 - lowest_seg[0]) >= 1:
+                pick_list = ['destroyers']
+        elif s.ship_seg[lowest_seg] == 'R':
+            directions = ['h', 'v']
+            if s.row_con[lowest_seg[1]] >= 4 and lowest_seg[0] >= 3:
+                pick_list = ['battleships', 'cruisers', 'destroyers']
+            elif s.row_con[lowest_seg[1]] >= 3 and lowest_seg[0] >= 2:
+                pick_list = ['cruisers', 'destroyers']
+            elif s.row_con[lowest_seg[1]] >= 2 and lowest_seg[0] >= 1:
+                pick_list = ['destroyers']
+        elif s.ship_seg[lowest_seg] == 'M':
+            if s.row_con[lowest_seg[1]] >= s.col_con[lowest_seg[0]]:
+                directions = ['h', 'v']
+                if s.row_con[lowest_seg[1]] >= 4:
+                    pick_list = ['battleships', 'cruisers']
+                else:
+                    pick_list = ['cruisers']
+            else:
+                directions = ['v', 'h']
+                if s.col_con[lowest_seg[0]] >= 4:
+                    pick_list = ['battleships', 'cruisers']
+                else:
+                    pick_list = ['cruisers']
+    else:
+        # If there is no ship segment on the game board,
+        # then find the largest ship
+        pick_list = ['battleships', 'cruisers', 'destroyers', 'submarines']
+    for ship in pick_list:
+        remain = s.ship_remain[ship]
+        if remain > 0:
+            if directions is None and ship != 'submarines':
+                # Find the one with lowest domain
+                h_count = 0
+                v_count = 0
+                for key in s.ship_domain[ship][remain - 1]:
+                    if 'h' in s.ship_domain[ship][remain - 1][key]:
+                        h_count += 1
+                    if 'v' in s.ship_domain[ship][remain - 1][key]:
+                        v_count += 1
+                if h_count >= v_count:
+                    directions = ['h', 'v']
+                else:
+                    directions = ['v', 'h']
+            return [ship, remain - 1, directions]
+
+
+if __name__ == "__main__":
+    state = txt_to_state('input_hard1.txt')
+    # tmp_s = s_clone(state)
+    # print(tmp_s == state)
+    forward_check(state)
